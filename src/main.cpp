@@ -5,7 +5,8 @@ using namespace std;
 
 int main() {
     cout << "Input latin phrase: " << endl;
-    string test = "Ignorantia non est argumentum";
+    string test = "Ignorantia non est argumentum. Alea jacta est.";
     vector<string> token = getTokens(test);
+    getSentences(test);
     return 0;
 }
