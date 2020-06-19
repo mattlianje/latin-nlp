@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "tokenization/tokenize.h"
+#include "phonology/phonology.h"
 using namespace std;
 
 int main() {
@@ -9,5 +10,7 @@ int main() {
     text catilina_ptI = tokenizeText(test);
     catilina_ptI.printSentences();
     catilina_ptI.printTokens();
+    Alphabet example;
+    example.show();
     return 0;
 }

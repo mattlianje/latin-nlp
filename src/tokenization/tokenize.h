@@ -36,9 +36,9 @@ class text {
     public:
         void add_sentence (sentence);
         void printTokens(void) {
-            for(int i = 0; i < sentences.size(); i++) {
+            for (int i = 0; i < sentences.size(); i++) {
                 sentence curr_sentence = sentences.at(i);
-                for(int j = 0; j < curr_sentence.tokens.size(); j++) {
+                for (int j = 0; j < curr_sentence.tokens.size(); j++) {
                     contextualToken currToken = curr_sentence.tokens.at(j);
                     cout << "(" << currToken.index << ") " << currToken.val << " -> tag: " << currToken.tag << endl;
                 }
@@ -47,9 +47,9 @@ class text {
         }
         void printSentences(void) {
             cout << endl;
-            for(int i = 0; i < sentences.size(); i++) {
+            for (int i = 0; i < sentences.size(); i++) {
                 sentence curr_sentence = sentences.at(i);
-                for(int j = 0; j < curr_sentence.tokens.size(); j++) {
+                for (int j = 0; j < curr_sentence.tokens.size(); j++) {
                     contextualToken currToken = curr_sentence.tokens.at(j);
                     cout << currToken.val << " ";
                 }
@@ -63,10 +63,10 @@ void text::add_sentence (sentence stnc) {
     sentences.push_back(stnc);
 }
 
-vector<string> getSentences(string str) {
+vector<string> getSentences (string str) {
     vector<string> sentences;
     size_t found = str.find_first_of(".?!"), start = 0;
-    while(found != std::string::npos) {
+    while (found != std::string::npos) {
         // sentence end found add to vec.
         int tempLen = found + 1 - start;
         string sentence = str.substr(start, tempLen);
@@ -82,15 +82,24 @@ vector<string> getSentences(string str) {
 * @input: str e.g. "Ignorantia non est argumentum. Cave canem."
 * @output: vec<string> of lating tokens, e.g. text res = <Igronatia, non, est, argumentum, Cave, canem>
 */
-vector<string> getTokens(string str) {
+vector<string> getTokens (string str) {
     vector<string> tokens;
     stringstream seek(str);
     string temp;
     // latin tokenization just from whitespace ' '.
-    while(getline(seek, temp, ' ')) {
-        if(temp.back() == '.' || temp.back() == '?' || temp.back() == '!') {
+    while (getline(seek, temp, ' ')) {
+        if (temp.back() == '.' || temp.back() == '?' || temp.back() == '!') {
             temp.pop_back();
             tokens.push_back(temp);
+        }
+        if (temp.back() == ',') {
+            string comma;
+            comma.push_back(',');
+            // Remove last char from string
+            temp.resize(temp.size() - 1);
+            // Push token THEN comma to the sentence vec
+            tokens.push_back(temp);
+            tokens.push_back(comma);
         }
         else {
             tokens.push_back(temp);
@@ -102,13 +111,13 @@ vector<string> getTokens(string str) {
 * @input: str of text, e.g. "Ignorantia non est argumentum. Cave canem."
 * @output: text obj, e.g. text res = <sentence1, sentence2>
 */
-text tokenizeText(string str) {
+text tokenizeText (string str) {
     text txt;
     vector<string> sentences = getSentences(str);
-    for(int i = 0; i < sentences.size(); i++) {
+    for (int i = 0; i < sentences.size(); i++) {
         sentence stnc;
         vector<string> plainTokens = getTokens(sentences.at(i));
-        for(int j = 0; j < plainTokens.size(); j++) {
+        for (int j = 0; j < plainTokens.size(); j++) {
             string currToken = plainTokens.at(j);
             vector<int> tails;
             string tag = "na";

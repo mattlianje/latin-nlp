@@ -1,0 +1,41 @@
+// https://en.wikipedia.org/wiki/Help:IPA/Latin
+// Vowels (Classical)
+a:a
+ā:aː
+e:ɛ
+ē:eː
+i:ɪ
+ī:iː
+o:ɔ
+ō:oː
+u:ʊ
+ū:uː
+y:ʏ
+ȳ:yː
+ae:ae̯
+oe:oe̯
+au:au̯
+eu:eu̯
+ui:ui̯
+// Consonants (Classical)
+b:b
+d:d
+f:f
+ɡ:g
+h:h
+i:j
+c:k
+ch:kʰ
+qu:kʷ
+l:l
+l:ɫ
+m:m
+n:n
+p:p
+ph:pʰ
+r:r
+s:s
+t:t
+th:tʰ
+u:w
+z:z
