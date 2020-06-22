@@ -88,44 +88,34 @@ void Alphabet::show() {
 * @output: vec<Phone> of Phones (IPA strings from map with rules applied), e.g. aˈbɛkᶣɪt̪oː
 */
 vector<Phone> getIPA(string str) {
-    vector<Phone>result;
+    cout << str << endl;
+    vector<Phone> result;
     map<string, string>::iterator itr;
-    map<string, string>::iterator itr_backup;
     Alphabet IPA_map;
     // Since the maxium num of latin chars = to 1 IPA char is 2 ...
     int i = 0;
-    while (i != str.size()) {
+    while (i < str.size()) {
         // If curr char and next char map to a latin IPA, e.g. qu -> kʷ
-        if (i < str.size() - 2) {
-            itr = IPA_map.pairs.find(str.substr(i,2));
-            itr_backup = IPA_map.pairs.find(str.substr(i,1));
-            if (itr != IPA_map.pairs.end()) {
-                string IPA_string = itr -> second;
-                cout << IPA_string;
-                Phone curr;
-                curr.val = IPA_string;
-                result.push_back(curr);
-                i += 2; 
-            }
-            else if (itr_backup != IPA_map.pairs.end()) {
-                string IPA_string = itr -> second;
-                cout << IPA_string;
-                Phone curr;
-                curr.val = IPA_string;
-                result.push_back(curr);
-                i += 1; 
-            }
+        char currentChar = str.at(i);
+        string nextTwo = str.substr(i, 2);
+        itr = IPA_map.pairs.find(nextTwo);
+        if (itr != IPA_map.pairs.end()) {
+            Phone doublePhone;
+            string currDouble = IPA_map.pairs.at(nextTwo);
+            cout << currDouble;
+            doublePhone.val = currDouble;
+            result.push_back(doublePhone);
+            i+= 2;
         }
         else {
-            itr = IPA_map.pairs.find(str.substr(i,1));
-            if(itr != IPA_map.pairs.end()) {
-                string IPA_string = itr -> second;
-                cout << IPA_string;
-                Phone curr;
-                curr.val = IPA_string;
-                result.push_back(curr);
-            }
-            i += 1; 
+            Phone phone;
+            string currentString;
+            currentString.push_back(currentChar);
+            string curr = IPA_map.pairs.at(currentString);
+            phone.val = curr;
+            result.push_back(phone);
+            cout << curr;
+            i++;
         }
     }
     return result;

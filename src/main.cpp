@@ -10,9 +10,7 @@ int main() {
     text catilina_ptI = tokenizeText(test);
     catilina_ptI.printSentences();
     catilina_ptI.printTokens();
-    Alphabet example;
-    example.show();
-    string test2 = "abutere";
+    string test2 = "qubiti";
     getIPA(test2);
     return 0;
 }
