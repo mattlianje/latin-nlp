@@ -75,6 +75,7 @@ vector<string> getSentences(string str) {
         int tempLen = found + 1 - start;
         string sentence = str.substr(start, tempLen);
         sentences.push_back(sentence);
+        cout << sentence << endl;
         // set start of next sentence.
         start = found + 2;
         found = str.find_first_of(".?!", found + 1);
@@ -93,8 +94,8 @@ vector<string> getTokens(string str) {
     // latin tokenization just from whitespace ' '.
     while (getline(seek, temp, ' ')) {
         if (temp.back() == '.' || temp.back() == '?' || temp.back() == '!') {
-            temp.pop_back();
-            tokens.push_back(temp);
+            string stripped = temp.substr(0, temp.size() - 1);
+            tokens.push_back(stripped);
         }
         if (temp.back() == ',') {
             string comma;
@@ -105,7 +106,7 @@ vector<string> getTokens(string str) {
             tokens.push_back(temp);
             tokens.push_back(comma);
         }
-        else {
+        else if (temp.back() != '.' && temp.back() != '?' && temp.back() != '!') {
             tokens.push_back(temp);
         }
     }
