@@ -12,5 +12,7 @@ int main() {
     catilina_ptI.printTokens();
     Alphabet example;
     example.show();
+    string test2 = "abutere";
+    getIPA(test2);
     return 0;
 }
