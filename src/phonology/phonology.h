@@ -16,7 +16,7 @@ e.g. abequito: I ride away - IPA  [aˈbɛ.kᶣɪ.t̪oː]
         aˈbɛkᶣɪt̪oː       (step 2: create word as vec of phones from step 1)
     ________|______
    |        |      | 
-   aˈbɛ    kᶣɪ     t̪oː   (step 3: create Syllable objects from Phone objects in abequito 
+   aˈbɛ    kᶣɪ     t̪oː   (step 3: create 'Syllable' objects from Phone objects in abequito 
                                   then update syllable vec in abequito Word obj)
 
 */
@@ -56,7 +56,7 @@ class Alphabet {
         map<string, string> pairs;
 };
 
-Alphabet::Alphabet () {
+Alphabet::Alphabet() {
     string line;
     ifstream file("phonology/IPA_latin_equivalencies.txt");
     while (getline (file, line)) {
@@ -79,6 +79,54 @@ void printMap(map<string, string> const &m) {
     }
 }
 
-void Alphabet::show () {
+void Alphabet::show() {
     printMap(pairs);
+}
+
+/*
+* @input: any string of plain Latin e.g. "abequito".
+* @output: vec<Phone> of Phones (IPA strings from map with rules applied), e.g. aˈbɛkᶣɪt̪oː
+*/
+vector<Phone> getIPA(string str) {
+    vector<Phone>result;
+    map<string, string>::iterator itr;
+    map<string, string>::iterator itr_backup;
+    Alphabet IPA_map;
+    // Since the maxium num of latin chars = to 1 IPA char is 2 ...
+    int i = 0;
+    while (i != str.size()) {
+        // If curr char and next char map to a latin IPA, e.g. qu -> kʷ
+        if (i < str.size() - 2) {
+            itr = IPA_map.pairs.find(str.substr(i,2));
+            itr_backup = IPA_map.pairs.find(str.substr(i,1));
+            if (itr != IPA_map.pairs.end()) {
+                string IPA_string = itr -> second;
+                cout << IPA_string;
+                Phone curr;
+                curr.val = IPA_string;
+                result.push_back(curr);
+                i += 2; 
+            }
+            else if (itr_backup != IPA_map.pairs.end()) {
+                string IPA_string = itr -> second;
+                cout << IPA_string;
+                Phone curr;
+                curr.val = IPA_string;
+                result.push_back(curr);
+                i += 1; 
+            }
+        }
+        else {
+            itr = IPA_map.pairs.find(str.substr(i,1));
+            if(itr != IPA_map.pairs.end()) {
+                string IPA_string = itr -> second;
+                cout << IPA_string;
+                Phone curr;
+                curr.val = IPA_string;
+                result.push_back(curr);
+            }
+            i += 1; 
+        }
+    }
+    return result;
 }
