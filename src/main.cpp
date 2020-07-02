@@ -2,6 +2,7 @@
 #include <vector>
 #include "tokenization/tokenize.h"
 #include "phonology/phonology.h"
+#include "models/posRuleBased.h"
 using namespace std;
 
 int main() {
@@ -12,5 +13,6 @@ int main() {
     catilina_ptI.printTokens();
     string test2 = "qubiti";
     getIPA(test2);
+    getVerbEndings();
     return 0;
 }

@@ -1,0 +1,28 @@
+// '*' indicates a prefix ...
+// ∴ *a,*e,*i,s --> as, es, is
+*a,*e,*i,s
+*a,*e,*i,t
+*a,*e,*i,mus
+*a,*e,*i,tis
+*a,*e,*i,nt
+*a,*e,ris
+*a,*e,*i,tur
+*a,*e,*i,mur
+*a,*e,*i,mini
+*a,*e,*u,ntur
+*a,*e,*ia,em,s,t,mus,tis,nt
+*e,*e,*ia,s,t,mus,tis,nt
+*a,*ie,bam,bas,bat,bamus,batis,bant
+// Handle the case where the first of the line being read is not a '*'
+bam,bas,bat,bamus,batis,bant
+*a,*ie,*e,bar,baris,batur,bamur,bamini,bantur
+*a,*ie,*e,bo,bis,bit,bimus,bitis,bunt
+*a,*ie,*e,bor,beris,bitur,bimur,bimini,buntur
+ar,eris,etur,emur,emini,entur
+*v,*u,ar,eris,etur,emur,emini,entur
+*v,*u,i,isti,it,imus,istis,erunt
+*v,*u,eram,eras,erat,eramus,eratis,erant
+*v,*u,issem,isses,isset,issemus,issetis,issent,asset
+*v,*u,erim,eris,erit,erimus,eritis,erint
+// Irregular verbs (continue to add more)
+sum,es,est,sumus,estis,sunt
