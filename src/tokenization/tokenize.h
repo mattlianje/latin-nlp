@@ -32,8 +32,8 @@ void sentence::add_token (contextualToken token) {
 }
 
 class text {
-    vector<sentence> sentences;
     public:
+        vector<sentence> sentences;
         void add_sentence (sentence);
         void printTokens(void);
         void printSentences(void);
