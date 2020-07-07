@@ -118,5 +118,6 @@ vector<Phone> getIPA(string str) {
             i++;
         }
     }
+    cout << endl;
     return result;
 }

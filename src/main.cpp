@@ -11,7 +11,7 @@ int main() {
     text catilina_ptI = tokenizeText(test);
     catilina_ptI.printSentences();
     catilina_ptI.printTokens();
-    string test2 = "qubiti";
+    string test2 = "quo usque tandem abutere, catilina, patientia nostra?";
     getIPA(test2);
     getVerbEndings();
     return 0;
