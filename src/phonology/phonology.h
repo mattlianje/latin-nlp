@@ -26,8 +26,8 @@ class Phone {
     public:
         string val;
         map<string, bool> features;
-        string leftPhone;
-        string rightPhone;
+        string left;
+        string right;
 
 };
 
@@ -84,12 +84,44 @@ void Alphabet::show() {
 }
 
 /*
+* @input: vector of Phones without their features or neighbouring phones
+* @output: vec<Phone> of Phones with all L/R contexts applied (but no grammar rule flags yet)
+*/
+vector<Phone> putIPAContext(vector<Phone> rawPhones) {
+    for (int i = 0; i < rawPhones.size(); i++) {
+        // Fencepost coditions where leftmost Phone cannot have a left phone, rightmost Phone cannot have a right phone
+        if (i == 0) {
+            rawPhones.at(i).left = "NULL";
+            rawPhones.at(i).right = rawPhones.at(i + 1).val;
+        }
+        if (i != 0 && i != rawPhones.size() - 1) {
+            // TODO: Refactor
+            string leftPhone = rawPhones.at(i - 1).val;
+            string rightPhone = rawPhones.at(i + 1).val;
+            if (leftPhone == " " || leftPhone == "," || leftPhone == ".") {
+                leftPhone = "NULL";
+            }
+            if (rightPhone == " " || rightPhone == "," || rightPhone == ".") {
+                rightPhone = "NULL";
+            }
+            rawPhones.at(i).left = leftPhone;
+            rawPhones.at(i).right = rightPhone;
+        }
+        if (i == rawPhones.size() - 1) {
+            rawPhones.at(i).left = rawPhones.at(i - 1).val;
+            rawPhones.at(i).right = "NULL";
+        }
+    }
+    return rawPhones;
+}
+
+/*
 * @input: any string of plain Latin e.g. "abequito".
 * @output: vec<Phone> of Phones (IPA strings from map with rules applied), e.g. aˈbɛkᶣɪt̪oː
 */
 vector<Phone> getIPA(string str) {
     cout << str << endl;
-    vector<Phone> result;
+    vector<Phone> result_no_context;
     map<string, string>::iterator itr;
     Alphabet IPA_map;
     // Since the maxium num of latin chars = to 1 IPA char is 2 ...
@@ -104,7 +136,7 @@ vector<Phone> getIPA(string str) {
             string currDouble = IPA_map.pairs.at(nextTwo);
             cout << currDouble;
             doublePhone.val = currDouble;
-            result.push_back(doublePhone);
+            result_no_context.push_back(doublePhone);
             i+= 2;
         }
         else {
@@ -113,10 +145,12 @@ vector<Phone> getIPA(string str) {
             currentString.push_back(currentChar);
             string curr = IPA_map.pairs.at(currentString);
             phone.val = curr;
-            result.push_back(phone);
+            result_no_context.push_back(phone);
             cout << curr;
             i++;
         }
     }
+    cout << endl;
+    vector<Phone> result = putIPAContext(result_no_context);
     return result;
 }

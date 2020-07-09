@@ -39,3 +39,11 @@ t:t
 th:tʰ
 u:w
 z:z
+// Whitespace and punctuation
+ : 
+.:.
+!:!
+?:?
+':'
+":"
+,:,
