@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <string>
 #include <sstream>
 #include <fstream>
@@ -28,7 +29,7 @@ class Phone {
         map<string, bool> features;
         string left;
         string right;
-
+        bool isVowel;
 };
 
 // A syllable is a vector of phones with an Onset, Nucleus and Coda
@@ -54,6 +55,7 @@ class Alphabet {
         Alphabet();
         void show();
         map<string, string> pairs;
+        vector<string> vowels;
 };
 
 Alphabet::Alphabet() {
@@ -71,6 +73,13 @@ Alphabet::Alphabet() {
         }
     }
     file.close();
+
+    string currVowel;
+    ifstream fileVowels("phonology/IPA_vowels.txt");
+    while (getline (fileVowels, currVowel)) {
+        vowels.push_back(currVowel);
+    }
+    fileVowels.close();
 }
 
 void printMap(map<string, string> const &m) {
@@ -124,6 +133,7 @@ vector<Phone> getIPA(string str) {
     vector<Phone> result_no_context;
     map<string, string>::iterator itr;
     Alphabet IPA_map;
+    vector<string> v = IPA_map.vowels;
     // Since the maxium num of latin chars = to 1 IPA char is 2 ...
     int i = 0;
     while (i < str.size()) {
@@ -134,8 +144,15 @@ vector<Phone> getIPA(string str) {
         if (itr != IPA_map.pairs.end()) {
             Phone doublePhone;
             string currDouble = IPA_map.pairs.at(nextTwo);
-            cout << currDouble;
+            doublePhone.isVowel = false;
+            // Check if the doublPhone is in the vowel list.
+            for (int i = 0; i < v.size(); i++) {
+                if (v.at(i) == currDouble) {
+                    doublePhone.isVowel = true;
+                }
+            }
             doublePhone.val = currDouble;
+            cout << currDouble;
             result_no_context.push_back(doublePhone);
             i+= 2;
         }
@@ -144,6 +161,12 @@ vector<Phone> getIPA(string str) {
             string currentString;
             currentString.push_back(currentChar);
             string curr = IPA_map.pairs.at(currentString);
+            phone.isVowel = false;
+            for (int i = 0; i < v.size(); i++) {
+                if (v.at(i) == curr) {
+                    phone.isVowel = true;
+                }
+            }
             phone.val = curr;
             result_no_context.push_back(phone);
             cout << curr;
