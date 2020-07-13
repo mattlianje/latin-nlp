@@ -14,8 +14,8 @@ int main() {
     // string testString;
     // cout << "Input latin string for phonological analysis: ";
     // getline (cin, testString);
-    string test_2 = "quo usque tandem abutere, catilina, patientia nostra?";
-    getIPA(test_2);
+    string phonologyTest = "quo usque tandem abutere, catilina, patientia nostra?";
+    getIPA(phonologyTest);
     getVerbEndings();
     return 0;
 }

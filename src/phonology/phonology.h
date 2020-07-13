@@ -22,18 +22,26 @@ e.g. abequito: I ride away - IPA  [aˈbɛ.kᶣɪ.t̪oː]
 
 */
 
-// The smallest unit used for this phonology, an IPA char
+// Accompanies a phone to the left and right in all words wiht more than one phone.
+class neighbourPhone {
+    public:
+        string val;
+        map<string, bool> features;
+        bool isVowel;
+};
+
+// The smallest unit used for this phonology, an IPA char.
 class Phone {
     public:
         string val;
         map<string, bool> features;
-        string left;
-        string right;
+        neighbourPhone left;
+        neighbourPhone right;
         bool isVowel;
 };
 
-// A syllable is a vector of phones with an Onset, Nucleus and Coda
-// O-N-C (Nucleus is a vowel, Onset and Coda are optional groups of consonants)
+// A syllable is a vector of phones with an Onset, Nucleus and Coda.
+// O-N-C (Nucleus is a vowel, Onset and Coda are optional groups of consonants).
 
 class Syllable {
     public:
@@ -43,7 +51,7 @@ class Syllable {
         Phone coda;
 };
 
-// A word is a vector of syllables
+// A word is a vector of syllables.
 class Word {
     public:
         vector<Phone> phones;
@@ -66,7 +74,7 @@ Alphabet::Alphabet() {
             int pos = line.find_first_of(':');
             std::string ipaString = line.substr(pos+1),
             latinString = line.substr(0, pos);
-            // Insert into map iff tuple not already present
+            // Insert into map iff tuple not already present.
             if (!pairs.insert( std::make_pair(latinString, ipaString) ).second ) {
                 pairs.insert(std::pair<string, string>(latinString, ipaString));
             }
@@ -93,32 +101,37 @@ void Alphabet::show() {
 }
 
 /*
-* @input: vector of Phones without their features or neighbouring phones
-* @output: vec<Phone> of Phones with all L/R contexts applied (but no grammar rule flags yet)
+* @input: vector of Phones without their features or neighbouring phones.
+* @output: vec<Phone> of Phones with all L/R contexts applied (but no grammar rule flags yet).
 */
 vector<Phone> putIPAContext(vector<Phone> rawPhones) {
     for (int i = 0; i < rawPhones.size(); i++) {
-        // Fencepost coditions where leftmost Phone cannot have a left phone, rightmost Phone cannot have a right phone
+        // Fencepost coditions where leftmost Phone cannot have a left phone, rightmost Phone cannot have a right phone.
         if (i == 0) {
-            rawPhones.at(i).left = "NULL";
-            rawPhones.at(i).right = rawPhones.at(i + 1).val;
+            rawPhones.at(i).left.val = "NULL";
+            rawPhones.at(i).right.val = rawPhones.at(i + 1).val, rawPhones.at(i).right.isVowel = rawPhones.at(i + 1).isVowel;
         }
         if (i != 0 && i != rawPhones.size() - 1) {
-            // TODO: Refactor
+
             string leftPhone = rawPhones.at(i - 1).val;
             string rightPhone = rawPhones.at(i + 1).val;
+            bool leftVowel = rawPhones.at(i - 1).isVowel;
+            bool rightVowel = rawPhones.at(i + 1).isVowel;
+
             if (leftPhone == " " || leftPhone == "," || leftPhone == ".") {
                 leftPhone = "NULL";
             }
             if (rightPhone == " " || rightPhone == "," || rightPhone == ".") {
                 rightPhone = "NULL";
             }
-            rawPhones.at(i).left = leftPhone;
-            rawPhones.at(i).right = rightPhone;
+            // Set leftPhone, rightPhone string val and bool value.
+            rawPhones.at(i).left.val = leftPhone, rawPhones.at(i).left.isVowel = leftVowel;
+            rawPhones.at(i).right.val = rightPhone, rawPhones.at(i).right.isVowel = rightVowel;
         }
         if (i == rawPhones.size() - 1) {
-            rawPhones.at(i).left = rawPhones.at(i - 1).val;
-            rawPhones.at(i).right = "NULL";
+            // Set leftPhone string val and bool value.
+            rawPhones.at(i).left.val = rawPhones.at(i - 1).val, rawPhones.at(i).left.isVowel = rawPhones.at(i - 1).isVowel;
+            rawPhones.at(i).right.val = "NULL";
         }
     }
     return rawPhones;
@@ -137,7 +150,7 @@ vector<Phone> getIPA(string str) {
     // Since the maxium num of latin chars = to 1 IPA char is 2 ...
     int i = 0;
     while (i < str.size()) {
-        // If curr char and next char map to a latin IPA, e.g. qu -> kʷ
+        // If curr char and next char map to a latin IPA, e.g. qu -> kʷ.
         char currentChar = str.at(i);
         string nextTwo = str.substr(i, 2);
         itr = IPA_map.pairs.find(nextTwo);
