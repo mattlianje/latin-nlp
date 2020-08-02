@@ -5,6 +5,7 @@
 #include <fstream>
 #include <cstddef>
 #include <vector>
+#include <iomanip>
 #include <map>
 using namespace std;
 
@@ -59,7 +60,6 @@ bool isLiquid(string str) {
     return false;
 }
 
-// TODO: use the left and right phone feature .....
 bool isAspirate(string str) {
     vector<string> aspirates;
     string aspirate;
@@ -94,6 +94,7 @@ e.g. abequito: I ride away - IPA  [aˈbɛ.kᶣɪ.t̪oː]
 */
 
 // Accompanies a phone to the left and right in all words wiht more than one phone.
+
 class neighbourPhone {
     public:
         string val;
@@ -102,6 +103,7 @@ class neighbourPhone {
 };
 
 // The smallest unit used for this phonology, an IPA char.
+
 class Phone {
     public:
         string val;
@@ -122,6 +124,7 @@ class Syllable {
 };
 
 // A word is a vector of syllables.
+
 class Word {
     public:
         vector<Phone> phones;
@@ -141,6 +144,17 @@ class Alphabet {
         map<string, string> pairs;
         vector<string> vowels;
 };
+
+// @description: Helper function to print items in a map. 
+void printPhoneFeatureMap(map<string, bool> m, Phone phone) {
+    cout << phone.val << endl;
+    cout << "---------------" << endl;
+    std::cout << "isDiphtong : " << m["isDiphtong"] << '\n';
+    std::cout << "isStop : " << m["isStop"] << '\n';
+    std::cout << "isLiquid : " << m["isLiquid"] << '\n';
+    std::cout << "isAspirate : " << m["isAspirate"] << '\n';
+    cout << endl;
+}
 
 /*
 * @description: adds a vector of whitespace/comma/full stop delimited 'Word' to the Phonetic Corpus
@@ -252,24 +266,25 @@ vector<Phone> putIPAContext(vector<Phone> rawPhones) {
 */
 vector<Word> getSyllables(vector<Phone> phones) {
     for (int i = 0; i < phones.size(); i++) {
-        Phone currentPhone = phones.at(i);
-        bool diphtong = isDiphtong(currentPhone.val);
-        bool stop = isStop(currentPhone.val);
-        bool liquid = isLiquid(currentPhone.val);
-        bool aspirate = isAspirate(currentPhone.val);
+        bool diphtong = isDiphtong(phones.at(i).val);
+        bool stop = isStop(phones.at(i).val);
+        bool liquid = isLiquid(phones.at(i).val);
+        bool aspirate = isAspirate(phones.at(i).val);
 
-        currentPhone.features.insert(std::pair<string, bool>("isDiphtong", diphtong));
-        currentPhone.features.insert(std::pair<string, bool>("isStop", stop));
-        currentPhone.features.insert(std::pair<string, bool>("isLiquid", liquid));
-        currentPhone.features.insert(std::pair<string, bool>("isAspirate", aspirate));
+        phones.at(i).features.insert(std::pair<string, bool>("isDiphtong", diphtong));
+        phones.at(i).features.insert(std::pair<string, bool>("isStop", stop));
+        phones.at(i).features.insert(std::pair<string, bool>("isLiquid", liquid));
+        phones.at(i).features.insert(std::pair<string, bool>("isAspirate", aspirate));
     }
+
     PhoneticCorpus corp;
     corp.loadWords(phones);
+
     cout << "TEST: Word objects being created properly" << endl;
     for (int i = 0; i < corp.words.size(); i++) {
         Word currentWord = corp.words.at(i);
         for (int j = 0; j < currentWord.phones.size(); j++) {
-            cout << currentWord.phones.at(j).val;
+            printPhoneFeatureMap(currentWord.phones.at(j).features, currentWord.phones.at(j));
         }
     }
     cout << endl;
