@@ -8,6 +8,74 @@
 #include <map>
 using namespace std;
 
+// Syllabic decomposition rules used: 
+// http://www.wheelockslatin.com/chapters/introduction/introduction_syllables.html
+
+bool isDiphtong(string str) {
+    vector<string> diphtongs;
+    string diphtong;
+    ifstream file1("phonology/IPA_files/IPA_latin_diphtongs.txt");
+    while (getline (file1, diphtong)) {
+        diphtongs.push_back(diphtong);
+    }
+    file1.close();
+    for (int i = 0; i < diphtongs.size(); i++) {
+        if (diphtongs.at(i) == str) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool isStop(string str) {
+    vector<string> stopLetters;
+    string stopLetter;
+    ifstream file2("phonology/IPA_files/IPA_latin_stop_letters.txt");
+    while (getline (file2, stopLetter)) {
+        stopLetters.push_back(stopLetter);
+    }
+    file2.close();
+    for (int i = 0; i < stopLetters.size(); i++) {
+        if (stopLetters.at(i) == str) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool isLiquid(string str) {
+    vector<string> liquidLetters;
+    string liquidLetter;
+    ifstream file3("phonology/IPA_files/IPA_latin_liquid_letters.txt");
+    while (getline (file3, liquidLetter)) {
+        liquidLetters.push_back(liquidLetter);
+    }
+    file3.close();
+    for (int i = 0; i < liquidLetters.size(); i++) {
+        if (liquidLetters.at(i) == str) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// TODO: use the left and right phone feature .....
+bool isAspirate(string str) {
+    vector<string> aspirates;
+    string aspirate;
+    ifstream file4("phonology/IPA_files/IPA_latin_aspirates.txt");
+    while (getline (file4, aspirate)) {
+        aspirates.push_back(aspirate);
+    }
+    file4.close();
+    for (int i = 0; i < aspirates.size(); i++) {
+        if (aspirates.at(i) == str) {
+            return true;
+        }
+    }
+    return false;
+}
+
 /* Phonology method used ... made it up ;)
 
 e.g. abequito: I ride away - IPA  [aˈbɛ.kᶣɪ.t̪oː]
@@ -19,6 +87,9 @@ e.g. abequito: I ride away - IPA  [aˈbɛ.kᶣɪ.t̪oː]
    |        |      | 
    aˈbɛ    kᶣɪ     t̪oː   (step 3: create 'Syllable' objects from Phone objects in abequito 
                                   then update syllable vec in abequito Word obj)
+
+    Word x = <Phone1, Phone2, ..., Phone n> 
+    Phone x = its own properties + left neighbourPhone + right neighbourPhone to allow quick peeking at neighbours.                            
 
 */
 
@@ -45,10 +116,9 @@ class Phone {
 
 class Syllable {
     public:
-        vector<Phone> phones;
         vector<Phone> onset;
         vector<Phone> nucleus;
-        Phone coda;
+        vector<Phone> coda;
 };
 
 // A word is a vector of syllables.
@@ -56,6 +126,12 @@ class Word {
     public:
         vector<Phone> phones;
         vector<Syllable> syllables;
+};
+
+class PhoneticCorpus {
+    public:
+        vector<Word> words;
+        void loadWords(vector<Phone>);
 };
 
 class Alphabet {
@@ -66,9 +142,42 @@ class Alphabet {
         vector<string> vowels;
 };
 
+/*
+* @description: adds a vector of whitespace/comma/full stop delimited 'Word' to the Phonetic Corpus
+*               abstraction. Each 'Word' is a vector of 'Phones'
+* @input: NA.
+* @output: updated PhoneticCorpus.
+*/
+void PhoneticCorpus::loadWords(vector<Phone> phones) {
+    int i = 0;
+    int size = phones.size();
+    while (i < (phones.size() - 1)) {
+        Word currentWord;
+        while (phones.at(i).val != "NULL") {
+            if (i == (phones.size() - 1)) {
+                break;
+            }
+            Phone currentPhone = phones.at(i);
+            if (currentPhone.val == "NULL") {
+                i++;
+            }
+            if (currentPhone.val != " " || currentPhone.val != "." || currentPhone.val != ",") {
+                currentWord.phones.push_back(currentPhone);
+                i++;
+            }
+        }
+        words.push_back(currentWord);
+        currentWord.phones.clear();
+        if (i == (phones.size() - 1)) {
+            break;
+        }
+        i++;
+    }
+}
+
 Alphabet::Alphabet() {
     string line;
-    ifstream file("phonology/IPA_latin_equivalencies.txt");
+    ifstream file("phonology/IPA_files/IPA_latin_equivalencies.txt");
     while (getline (file, line)) {
         if (line.at(0) != '/') {
             int pos = line.find_first_of(':');
@@ -83,7 +192,7 @@ Alphabet::Alphabet() {
     file.close();
 
     string currVowel;
-    ifstream fileVowels("phonology/IPA_vowels.txt");
+    ifstream fileVowels("phonology/IPA_files/IPA_vowels.txt");
     while (getline (fileVowels, currVowel)) {
         vowels.push_back(currVowel);
     }
@@ -138,6 +247,36 @@ vector<Phone> putIPAContext(vector<Phone> rawPhones) {
 }
 
 /*
+* @input: vec<Phone> enriched phone objects.
+* @output: vec<Word> words with syllable groups.
+*/
+vector<Word> getSyllables(vector<Phone> phones) {
+    for (int i = 0; i < phones.size(); i++) {
+        Phone currentPhone = phones.at(i);
+        bool diphtong = isDiphtong(currentPhone.val);
+        bool stop = isStop(currentPhone.val);
+        bool liquid = isLiquid(currentPhone.val);
+        bool aspirate = isAspirate(currentPhone.val);
+
+        currentPhone.features.insert(std::pair<string, bool>("isDiphtong", diphtong));
+        currentPhone.features.insert(std::pair<string, bool>("isStop", stop));
+        currentPhone.features.insert(std::pair<string, bool>("isLiquid", liquid));
+        currentPhone.features.insert(std::pair<string, bool>("isAspirate", aspirate));
+    }
+    PhoneticCorpus corp;
+    corp.loadWords(phones);
+    cout << "TEST: Word objects being created properly" << endl;
+    for (int i = 0; i < corp.words.size(); i++) {
+        Word currentWord = corp.words.at(i);
+        for (int j = 0; j < currentWord.phones.size(); j++) {
+            cout << currentWord.phones.at(j).val;
+        }
+    }
+    cout << endl;
+    return corp.words;
+}
+
+/*
 * @input: any string of plain Latin e.g. "abequito".
 * @output: vec<Phone> of Phones (IPA strings from map with rules applied), e.g. aˈbɛkᶣɪt̪oː
 */
@@ -188,5 +327,6 @@ vector<Phone> getIPA(string str) {
     }
     cout << endl;
     vector<Phone> result = putIPAContext(result_no_context);
+    getSyllables(result);
     return result;
 }
